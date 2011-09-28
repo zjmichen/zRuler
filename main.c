@@ -1,3 +1,8 @@
+/* ZRuler
+ * Created by Zack Michener
+ * September 27, 2011
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <gtk/gtk.h>
@@ -37,6 +42,10 @@ int main(int argc, char** argv) {
 							G_CALLBACK(mouse_button), NULL);
 	g_signal_connect(G_OBJECT(window), "motion-notify-event", 
 							G_CALLBACK(mouse_motion), NULL);
+
+/*	GdkWindow *root_window = gdk_get_default_root_window();*/
+/*	gdk_window_set_events(root_window, GDK_POINTER_MOTION_MASK);*/
+/*	gdk_window_add_filter(root_window, mouse_motion, 	*/
 	
 	/* get things going */
 	screen_changed((GtkWindow*)window, NULL, NULL);	
