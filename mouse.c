@@ -17,6 +17,7 @@ gboolean mouse_button(GtkWidget *widget, GdkEvent *event, gpointer userdata) {
 			rotate_ruler(widget);
 	}
 	else {
+		/* the cursor positions are swapped when vertical */
 		if (is_in_button(cursor.y, cursor.x))
 			rotate_ruler(widget);
 	}

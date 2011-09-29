@@ -3,6 +3,7 @@
  * resizing, transparency, etc..
  */
 
+#include <X11/Xlib.h>
 #include <gtk/gtk.h>
 #include "common.h"
 #include "graphics.h"
@@ -59,4 +60,9 @@ void rotate_ruler(GtkWidget *widget) {
 	}
 		
 	draw_ruler(widget);
+}
+
+GdkFilterReturn event_filter(GdkXEvent *xevent, GdkEvent *event, gpointer data) {
+	fprintf(stderr, "%d\n", ((XEvent*)xevent)->type);
+	return GDK_FILTER_CONTINUE;
 }

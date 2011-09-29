@@ -114,13 +114,17 @@ void draw_cap(cairo_t *cr) {
 
 /* small button to rotate it 90 degrees */
 void draw_rotate_button(cairo_t *cr) {
-    cairo_rectangle(cr, r_length - 25.5, r_width/2 - 4.5, 10, 10);
+/*    cairo_rectangle(cr, r_length - 25.5, r_width/2 - 4.5, 10, 10);*/
+	cairo_arc(cr, r_length - 20.5, r_width/2 + 0.5, 5, 0.5, 2*M_PI);
+	cairo_move_to(cr, r_length - 15.5, r_width/2 + 0.5);
+	cairo_line_to(cr, r_length - 19.5, r_width/2 - 0.5);
+	cairo_move_to(cr, r_length - 15.5, r_width/2 + 0.5);
+	cairo_line_to(cr, r_length - 14.5, r_width/2 - 3.5);
+	
+	
+
     cairo_set_source_rgba(cr, 1,1,1, 1);
     cairo_stroke(cr);
-/*	cairo_surface_t *image = cairo_image_surface_create_from_png("rotate.png");*/
-/*	cairo_set_source_surface(cr, image, 10, 10);*/
-/*	cairo_move_to(cr, r_length - 25.5, r_width/2 - 4.5);*/
-/*	cairo_paint(cr);*/
 
 }
 
