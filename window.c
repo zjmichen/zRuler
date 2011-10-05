@@ -62,7 +62,28 @@ void rotate_ruler(GtkWidget *widget) {
 	draw_ruler(widget);
 }
 
-GdkFilterReturn event_filter(GdkXEvent *xevent, GdkEvent *event, gpointer data) {
-	fprintf(stderr, "%d\n", ((XEvent*)xevent)->type);
-	return GDK_FILTER_CONTINUE;
+GSourceFunc getXCursor() {
+	Display *dsp = XOpenDisplay( NULL );
+	if( !dsp ){ return FALSE; }
+
+/*	int screenNumber = DefaultScreen(dsp);*/
+
+	XEvent event;
+
+	/* get info about current pointer position */
+	XQueryPointer(dsp, RootWindow(dsp, DefaultScreen(dsp)),
+	&event.xbutton.root, &event.xbutton.window,
+	&event.xbutton.x_root, &event.xbutton.y_root,
+	&event.xbutton.x, &event.xbutton.y,
+	&event.xbutton.state);
+	
+	cursor.x = event.xbutton.x;
+	cursor.y = event.xbutton.y;
+	
+	
+/*	fprintf(stderr, "Mouse Coordinates: %d %d\n", cursor.x, cursor.y);*/
+
+	XCloseDisplay( dsp );
+	
+	return TRUE;
 }

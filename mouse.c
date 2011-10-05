@@ -9,16 +9,16 @@
 #include "window.h"
 
 gboolean mouse_button(GtkWidget *widget, GdkEvent *event, gpointer userdata) {
-	cursor.x = event->button.x;
-	cursor.y = event->button.y;
+	cursor_last_pressed.x = event->button.x;
+	cursor_last_pressed.y = event->button.y;
 	
 	if (ruler_orientation == HORIZONTAL) {
-		if (is_in_button(cursor.x, cursor.y))
+		if (is_in_button(cursor_last_pressed.x, cursor_last_pressed.y))
 			rotate_ruler(widget);
 	}
 	else {
 		/* the cursor positions are swapped when vertical */
-		if (is_in_button(cursor.y, cursor.x))
+		if (is_in_button(cursor_last_pressed.y, cursor_last_pressed.x))
 			rotate_ruler(widget);
 	}
 
@@ -52,9 +52,9 @@ gboolean resizing_ruler(GtkWidget *widget) {
 	int w_width, w_height;	// window dimensions
     gtk_window_get_size(GTK_WINDOW(widget), &w_width, &w_height);
     
-	if (cursor.x >= w_width - 10 && ruler_orientation == HORIZONTAL)
+	if (cursor_last_pressed.x >= w_width - 10 && ruler_orientation == HORIZONTAL)
 		return TRUE;
-	if (cursor.y >= w_height - 10 && ruler_orientation == VERTICAL)
+	if (cursor_last_pressed.y >= w_height - 10 && ruler_orientation == VERTICAL)
 		return TRUE;
 
 	return FALSE;

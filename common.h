@@ -9,4 +9,6 @@ enum Orientation {
 };
 
 extern Point cursor;
+extern Point cursor_last_pressed;
 extern enum Orientation ruler_orientation;
+extern GtkWidget *window;

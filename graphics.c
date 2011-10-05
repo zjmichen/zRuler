@@ -14,18 +14,25 @@ int i, j;
 int r_width, r_length;
 
 void draw_ruler(GtkWidget *widget) {
+	fprintf(stderr, "DRAWING!\n");
+
 	/* get window dimensions */
-	int w_width, w_height;
+	int w_width, w_height, w_x, w_y;
     gtk_window_get_size(GTK_WINDOW(widget), &w_width, &w_height);
+    gtk_window_get_position(GTK_WINDOW(widget), &w_x, &w_y);
+    
+    int cursor_mark_pos;
     
     /* make for rotation-independence */
     if (ruler_orientation == HORIZONTAL) {
 		r_width = w_height;
 		r_length = w_width;
+		cursor_mark_pos = cursor.x - w_x;
     }
     else {
     	r_width = w_width;
     	r_length = w_height;
+    	cursor_mark_pos = cursor.y - w_y;
     }
     
     cairo_t *cr = gdk_cairo_create(gtk_widget_get_window(widget));
@@ -44,6 +51,7 @@ void draw_ruler(GtkWidget *widget) {
     draw_background(cr);
     draw_lines(cr);
     draw_numbers(cr_overlay);
+    draw_cursor_mark(cr, cursor_mark_pos);
     draw_cap(cr);
     draw_rotate_button(cr);
     draw_translucent_overlay(cr_overlay);
@@ -97,6 +105,17 @@ void draw_numbers(cairo_t *cr) {
             rendertext(cr, buf, i + 3, r_width - 18);
         }
     }
+}
+
+/* tracks the mouse cursor position */
+void draw_cursor_mark(cairo_t *cr, int pos) {
+	if (pos > 0 && pos < r_length) {
+		cairo_move_to(cr, pos+0.5, 0);
+		cairo_line_to(cr, pos+0.5, r_width);
+		
+		cairo_set_source_rgba(cr, 1,1,1, 0.5);
+		cairo_stroke(cr);
+	}
 }
 
 /* thing on the end you resize it with */

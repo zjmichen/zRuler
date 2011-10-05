@@ -6,16 +6,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <gtk/gtk.h>
+#include <X11/Xlib.h>
 #include "common.h"
 #include "window.h"
 #include "graphics.h"
 #include "mouse.h"
 
 Point cursor;
+Point cursor_last_pressed;
 enum Orientation ruler_orientation = HORIZONTAL;
+GtkWidget *window;
 
 int main(int argc, char** argv) {
-    GtkWidget *window;
 	gtk_init(&argc, &argv);
 	
 	/* make a window! */
@@ -42,10 +44,9 @@ int main(int argc, char** argv) {
 							G_CALLBACK(mouse_button), NULL);
 	g_signal_connect(G_OBJECT(window), "motion-notify-event", 
 							G_CALLBACK(mouse_motion), NULL);
-
-/*	GdkWindow *root_window = gdk_get_default_root_window();*/
-/*	gdk_window_set_events(root_window, GDK_POINTER_MOTION_MASK);*/
-/*	gdk_window_add_filter(root_window, mouse_motion, 	*/
+	
+	/* gets the _global_ cursor position constantly */
+	g_timeout_add(100, getXCursor, NULL);
 	
 	/* get things going */
 	screen_changed((GtkWindow*)window, NULL, NULL);	
