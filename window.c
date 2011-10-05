@@ -66,8 +66,6 @@ GSourceFunc getXCursor() {
 	Display *dsp = XOpenDisplay( NULL );
 	if( !dsp ){ return FALSE; }
 
-/*	int screenNumber = DefaultScreen(dsp);*/
-
 	XEvent event;
 
 	/* get info about current pointer position */
@@ -79,9 +77,7 @@ GSourceFunc getXCursor() {
 	
 	cursor.x = event.xbutton.x;
 	cursor.y = event.xbutton.y;
-	
-	
-/*	fprintf(stderr, "Mouse Coordinates: %d %d\n", cursor.x, cursor.y);*/
+	draw_ruler(window);
 
 	XCloseDisplay( dsp );
 	

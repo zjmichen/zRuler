@@ -1,4 +1,4 @@
-/* ZRuler
+/* zRuler
  * Created by Zack Michener
  * September 27, 2011
  */

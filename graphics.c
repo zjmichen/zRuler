@@ -14,8 +14,6 @@ int i, j;
 int r_width, r_length;
 
 void draw_ruler(GtkWidget *widget) {
-	fprintf(stderr, "DRAWING!\n");
-
 	/* get window dimensions */
 	int w_width, w_height, w_x, w_y;
     gtk_window_get_size(GTK_WINDOW(widget), &w_width, &w_height);
@@ -52,6 +50,7 @@ void draw_ruler(GtkWidget *widget) {
     draw_lines(cr);
     draw_numbers(cr_overlay);
     draw_cursor_mark(cr, cursor_mark_pos);
+    draw_position_notifier(cr, cursor_mark_pos);
     draw_cap(cr);
     draw_rotate_button(cr);
     draw_translucent_overlay(cr_overlay);
@@ -116,6 +115,28 @@ void draw_cursor_mark(cairo_t *cr, int pos) {
 		cairo_set_source_rgba(cr, 1,1,1, 0.5);
 		cairo_stroke(cr);
 	}
+}
+
+/* text displaying cursor position */
+void draw_position_notifier(cairo_t *cr, int pos) {
+/*	cairo_move_to(cr, 15, r_width/2);*/
+/*	cairo_curve_to(cr, 15, r_width/2 - 10, 40, r_width/2 - 10, 40, r_width/2);*/
+/*	cairo_move_to(cr, 15, r_width/2);*/
+/*	cairo_curve_to(cr, 15, r_width/2 + 10, 40, r_width/2 + 10, 40, r_width/2);*/
+/*	cairo_set_source_rgba(cr, 1,1,1, 0.8);*/
+/*	cairo_fill(cr);*/
+
+	cairo_set_source_rgb(cr, 1,1,1);
+	cairo_rectangle(cr, 13.5, r_width/2 - 7.5, 31, 18);
+	cairo_stroke(cr);
+	
+	int posLen = -4*(int)log10(pos)+1;
+	char buf[5];
+	sprintf(buf, "%d", pos);
+	if (pos > 0)
+		rendertext(cr, buf, 26 + posLen, r_width/2 - 5);
+	else
+		rendertext(cr, buf, 18 + posLen, r_width/2 - 5);
 }
 
 /* thing on the end you resize it with */
