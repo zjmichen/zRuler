@@ -50,7 +50,7 @@ void draw_ruler(GtkWidget *widget) {
     draw_lines(cr);
     draw_numbers(cr_overlay);
     draw_cursor_mark(cr, cursor_mark_pos);
-    draw_position_notifier(cr, cursor_mark_pos);
+    draw_position_notifier(cr, cr_overlay, cursor_mark_pos);
     draw_cap(cr);
     draw_rotate_button(cr);
     draw_translucent_overlay(cr_overlay);
@@ -96,6 +96,8 @@ void draw_lines(cairo_t *cr) {
 
 /* so you don't have to count */
 void draw_numbers(cairo_t *cr) {
+	cairo_set_source_rgb(cr, 1,1,1);
+	
     for (i = 0; i < r_length; i++) {
         if ( i % 50 == 0 ) {
             char buf[5];
@@ -112,31 +114,55 @@ void draw_cursor_mark(cairo_t *cr, int pos) {
 		cairo_move_to(cr, pos+0.5, 0);
 		cairo_line_to(cr, pos+0.5, r_width);
 		
-		cairo_set_source_rgba(cr, 1,1,1, 0.5);
+		cairo_set_source_rgba(cr, 1,1,1, 0.75);
 		cairo_stroke(cr);
 	}
 }
 
 /* text displaying cursor position */
-void draw_position_notifier(cairo_t *cr, int pos) {
-/*	cairo_move_to(cr, 15, r_width/2);*/
-/*	cairo_curve_to(cr, 15, r_width/2 - 10, 40, r_width/2 - 10, 40, r_width/2);*/
-/*	cairo_move_to(cr, 15, r_width/2);*/
-/*	cairo_curve_to(cr, 15, r_width/2 + 10, 40, r_width/2 + 10, 40, r_width/2);*/
-/*	cairo_set_source_rgba(cr, 1,1,1, 0.8);*/
-/*	cairo_fill(cr);*/
+void draw_position_notifier(cairo_t *cr_bg, cairo_t *cr_num, int pos) {
+	if (ruler_orientation==VERTICAL) {
+		cairo_rotate(cr_num, -M_PI/2);
+		cairo_translate(cr_num, -r_width, 0);
+		cairo_rotate(cr_bg, -M_PI/2);
+		cairo_translate(cr_bg, -r_width, 0);
+	}
 
-	cairo_set_source_rgb(cr, 1,1,1);
-	cairo_rectangle(cr, 13.5, r_width/2 - 7.5, 31, 18);
-	cairo_stroke(cr);
-	
-	int posLen = -4*(int)log10(pos)+1;
+	cairo_set_source_rgba(cr_bg, 1,1,1, 0.8);
+	if (ruler_orientation==HORIZONTAL) {
+		cairo_move_to(cr_bg, 13.5, r_width/2);
+		cairo_curve_to(cr_bg, 13.5, r_width/2 - 12, 44.5, r_width/2 - 12, 44.5, r_width/2);
+		cairo_move_to(cr_bg, 13.5, r_width/2);
+		cairo_curve_to(cr_bg, 13.5, r_width/2 + 12, 44.5, r_width/2 + 12, 44.5, r_width/2);
+	}
+	else {
+		cairo_move_to(cr_bg, r_width/2 + 3, 24.5);
+		cairo_curve_to(cr_bg, r_width/2 - 17, 24.5, r_width/2 - 17, 39.5, r_width/2 + 3, 39.5);
+		cairo_move_to(cr_bg, r_width/2 + 3, 24.5);
+		cairo_curve_to(cr_bg, r_width/2 + 23, 24.5, r_width/2 + 23, 39.5, r_width/2 + 3, 39.5);
+	}
+	cairo_fill(cr_bg);
+		
+	cairo_set_source_rgb(cr_num, 0,0,0);
+	int numLen = -4*(int)log10(pos)+1;
+	if (pos < 0)
+		numLen -= 8;
+	int numOffset = 26;
 	char buf[5];
 	sprintf(buf, "%d", pos);
-	if (pos > 0)
-		rendertext(cr, buf, 26 + posLen, r_width/2 - 5);
-	else
-		rendertext(cr, buf, 18 + posLen, r_width/2 - 5);
+/*	rendertext(cr_num, buf, 26 + numLen, r_width/2 - 6);*/
+
+	
+	if (ruler_orientation==VERTICAL) {
+		rendertext(cr_num, buf, r_width/2 + numLen, numOffset);
+		cairo_translate(cr_num, r_width, 0);
+		cairo_rotate(cr_num, M_PI/2);
+		cairo_translate(cr_bg, r_width, 0);
+		cairo_rotate(cr_bg, M_PI/2);
+	}
+	else {
+		rendertext(cr_num, buf, numOffset + numLen, r_width/2 - 6);
+	}
 }
 
 /* thing on the end you resize it with */
@@ -154,15 +180,12 @@ void draw_cap(cairo_t *cr) {
 
 /* small button to rotate it 90 degrees */
 void draw_rotate_button(cairo_t *cr) {
-/*    cairo_rectangle(cr, r_length - 25.5, r_width/2 - 4.5, 10, 10);*/
 	cairo_arc(cr, r_length - 20.5, r_width/2 + 0.5, 5, 0.5, 2*M_PI);
 	cairo_move_to(cr, r_length - 15.5, r_width/2 + 0.5);
 	cairo_line_to(cr, r_length - 19.5, r_width/2 - 0.5);
 	cairo_move_to(cr, r_length - 15.5, r_width/2 + 0.5);
 	cairo_line_to(cr, r_length - 14.5, r_width/2 - 3.5);
 	
-	
-
     cairo_set_source_rgba(cr, 1,1,1, 1);
     cairo_stroke(cr);
 
@@ -196,7 +219,6 @@ void rendertext(cairo_t *cr, char *s, int x, int y) {
     pango_layout_set_font_description(layout, desc);
     pango_font_description_free(desc);
     
-    cairo_set_source_rgb(cr, 1,1,1);
     pango_cairo_update_layout(cr, layout);
     
     cairo_translate(cr, x, y);

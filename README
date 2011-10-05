@@ -3,5 +3,5 @@ by Zack Michener
 began September 28, 2011
 
 This is a simple screen ruler program.  I wanted to learn about GTK+ and make
-something really useful, so I decided to clone an OS X program called XScope.
-I want to port it to Windows and OS X for practice, too.
+something really useful, so I decided to clone part of an OS X program called 
+XScope. I want to port it to Windows and OS X for practice, too.

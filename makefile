@@ -1,4 +1,4 @@
-NAME=ruler
+NAME=zruler
 GTKFLAGS=`pkg-config --cflags --libs gtk+-3.0`
 CFLAGS= -c -Wall $(GTKFLAGS)
 OBJS=main.o window.o graphics.o mouse.o
