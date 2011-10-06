@@ -90,7 +90,9 @@ gboolean view_popup_menu (GtkWidget *widget, GdkEventButton *event, gpointer use
 
 	menu = gtk_menu_new();
 
-	menuitem_stay_on_top = gtk_menu_item_new_with_label("Always on top");
+	menuitem_stay_on_top = gtk_image_menu_item_new_with_label("Always on top");
+	gtk_image_menu_item_set_image((GtkImageMenuItem*)menuitem_stay_on_top, 
+									gtk_image_new_from_stock(GTK_STOCK_APPLY, GTK_ICON_SIZE_MENU));
 	menuitem_quit = gtk_menu_item_new_with_label("Quit");
 	
 
@@ -104,16 +106,16 @@ gboolean view_popup_menu (GtkWidget *widget, GdkEventButton *event, gpointer use
 
 	gtk_widget_show_all(menu);
 
-	gtk_menu_popup(GTK_MENU(menu), NULL, NULL, NULL, NULL,
-		           (event != NULL) ? event->button : 0,
-		           gdk_event_get_time((GdkEvent*)event));
+	gtk_menu_popup(GTK_MENU(menu), NULL, NULL, NULL, userdata,
+					(event != NULL) ? event->button : 0,
+					gdk_event_get_time((GdkEvent*)event));
 		           
 	return TRUE;
 }
 
 gboolean stay_on_top(GtkWidget *widget, GdkEvent *event, gpointer userdata) {
 	onTop = !onTop;
-	gtk_window_set_keep_above(window, onTop);
+	gtk_window_set_keep_above(GTK_WINDOW(window), onTop);
 	
 	return TRUE;
 }

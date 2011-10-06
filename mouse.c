@@ -13,7 +13,7 @@ gboolean mouse_button(GtkWidget *widget, GdkEvent *event, gpointer userdata) {
 	cursor_last_pressed.y = event->button.y;
 	
 	if (event->button.button == 3) {
-		view_popup_menu(widget, event, userdata);
+		view_popup_menu(widget, (GdkEventButton*)event, userdata);
 		return TRUE;
 	}
 	
