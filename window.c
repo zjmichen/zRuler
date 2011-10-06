@@ -5,6 +5,7 @@
 
 #include <X11/Xlib.h>
 #include <gtk/gtk.h>
+#include "window.h"
 #include "common.h"
 #include "graphics.h"
 #include "mouse.h"
@@ -62,7 +63,7 @@ void rotate_ruler(GtkWidget *widget) {
 	draw_ruler(widget);
 }
 
-GSourceFunc getXCursor() {
+gboolean getXCursor() {
 	Display *dsp = XOpenDisplay( NULL );
 	if( !dsp ){ return FALSE; }
 
@@ -70,16 +71,49 @@ GSourceFunc getXCursor() {
 
 	/* get info about current pointer position */
 	XQueryPointer(dsp, RootWindow(dsp, DefaultScreen(dsp)),
-	&event.xbutton.root, &event.xbutton.window,
-	&event.xbutton.x_root, &event.xbutton.y_root,
-	&event.xbutton.x, &event.xbutton.y,
-	&event.xbutton.state);
+		&event.xbutton.root, &event.xbutton.window,
+		&event.xbutton.x_root, &event.xbutton.y_root,
+		&event.xbutton.x, &event.xbutton.y,
+		&event.xbutton.state);
 	
 	cursor.x = event.xbutton.x;
 	cursor.y = event.xbutton.y;
 	draw_ruler(window);
 
 	XCloseDisplay( dsp );
+	
+	return TRUE;
+}
+
+gboolean view_popup_menu (GtkWidget *widget, GdkEventButton *event, gpointer userdata) {
+	GtkWidget *menu, *menuitem_quit, *menuitem_stay_on_top;
+
+	menu = gtk_menu_new();
+
+	menuitem_stay_on_top = gtk_menu_item_new_with_label("Always on top");
+	menuitem_quit = gtk_menu_item_new_with_label("Quit");
+	
+
+	g_signal_connect(menuitem_quit, "activate",
+		             gtk_main_quit, widget);
+	g_signal_connect(menuitem_stay_on_top, "activate",
+					G_CALLBACK(stay_on_top), widget);
+
+	gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem_stay_on_top);
+	gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem_quit);
+
+	gtk_widget_show_all(menu);
+
+	gtk_menu_popup(GTK_MENU(menu), NULL, NULL, NULL, NULL,
+		           (event != NULL) ? event->button : 0,
+		           gdk_event_get_time((GdkEvent*)event));
+		           
+	return TRUE;
+}
+
+gboolean stay_on_top(GtkWidget *widget, GdkEvent *event, gpointer userdata) {
+	onTop = !onTop;
+	gtk_window_set_keep_above(window, onTop);
 	
 	return TRUE;
 }

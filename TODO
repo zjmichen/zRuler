@@ -1,3 +1,6 @@
 general:
 	add context menu
-	
+	- quit
+	- resize
+	- stay-on-top
+	add menu button

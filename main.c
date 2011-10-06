@@ -16,6 +16,7 @@ Point cursor;
 Point cursor_last_pressed;
 enum Orientation ruler_orientation = HORIZONTAL;
 GtkWidget *window;
+gboolean onTop = FALSE;
 
 int main(int argc, char** argv) {
 	gtk_init(&argc, &argv);

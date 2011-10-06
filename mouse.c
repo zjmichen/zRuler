@@ -12,6 +12,11 @@ gboolean mouse_button(GtkWidget *widget, GdkEvent *event, gpointer userdata) {
 	cursor_last_pressed.x = event->button.x;
 	cursor_last_pressed.y = event->button.y;
 	
+	if (event->button.button == 3) {
+		view_popup_menu(widget, event, userdata);
+		return TRUE;
+	}
+	
 	if (ruler_orientation == HORIZONTAL) {
 		if (is_in_button(cursor_last_pressed.x, cursor_last_pressed.y))
 			rotate_ruler(widget);
