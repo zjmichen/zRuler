@@ -90,17 +90,16 @@ gboolean view_popup_menu (GtkWidget *widget, GdkEventButton *event, gpointer use
 
 	menu = gtk_menu_new();
 
-	menuitem_stay_on_top = gtk_image_menu_item_new_with_label("Always on top");
-	gtk_image_menu_item_set_image((GtkImageMenuItem*)menuitem_stay_on_top, 
-									gtk_image_new_from_stock(GTK_STOCK_APPLY, GTK_ICON_SIZE_MENU));
+	menuitem_stay_on_top = gtk_check_menu_item_new_with_label("Always on top");
+	gtk_check_menu_item_set_active ((GtkCheckMenuItem*)menuitem_stay_on_top, onTop);
 	menuitem_quit = gtk_menu_item_new_with_label("Quit");
 	
 
-	g_signal_connect(menuitem_quit, "activate",
-		             gtk_main_quit, widget);
 	g_signal_connect(menuitem_stay_on_top, "activate",
 					G_CALLBACK(stay_on_top), widget);
-
+	g_signal_connect(menuitem_quit, "activate",
+		             gtk_main_quit, widget);
+	
 	gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem_stay_on_top);
 	gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem_quit);
 
