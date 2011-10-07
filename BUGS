@@ -1,0 +1,5 @@
+(1.0) when maximized (e.g. with window grid) and subsequently restored, window decoration is activiated
+(1.0) the following error is generated each time the menu is activated:
+	`menu_proxy_module_load': ./zruler: undefined symbol: menu_proxy_module_load
+	(zruler:2634): Gtk-WARNING **: Failed to load type module: (null)
+(1.0) the menu and about dialog are not in the window manager's theme
