@@ -12,7 +12,7 @@
 #include "graphics.h"
 #include "mouse.h"
 
-const char *VERSION = "0.3";
+const char *VERSION = "v1.0";
 Point cursor;						// current position of cursor, always up to date
 Point cursorLastPressed;			// position of last mouse pressed event
 enum Orientation rulerOrientation = HORIZONTAL;
