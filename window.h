@@ -1,7 +1,7 @@
-void screen_changed (GtkWindow*, GdkScreen*, GtkWidget*);
+void screenChanged (GtkWindow*, GdkScreen*, GtkWidget*);
 gboolean expose(GtkWidget*, GdkEventExpose*, gpointer);
-GdkPixbuf *create_pixbuf(const gchar*);
-void rotate_ruler(GtkWidget*);
+GdkPixbuf *createPixbuf(const gchar*);
+void rotateRuler(GtkWidget*);
 gboolean getXCursor();
-gboolean view_popup_menu (GtkWidget*, GdkEventButton*, gpointer);
-gboolean stay_on_top(GtkWidget*, GdkEvent*, gpointer);
+gboolean viewPopupMenu (GtkWidget*, GdkEventButton*, gpointer);
+gboolean stayOnTop(GtkWidget*, GdkEvent*, gpointer);

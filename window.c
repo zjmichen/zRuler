@@ -11,7 +11,7 @@
 #include "mouse.h"
 
 /* sets shit up to be transparent */
-void screen_changed (GtkWindow *window, GdkScreen *old_screen, GtkWidget *label) {
+void screenChanged (GtkWindow *window, GdkScreen *old_screen, GtkWidget *label) {
 	GdkScreen *screen = gtk_widget_get_screen (GTK_WIDGET (window));
 	GdkVisual *visual = gdk_screen_get_rgba_visual (screen);
 
@@ -27,13 +27,13 @@ void screen_changed (GtkWindow *window, GdkScreen *old_screen, GtkWidget *label)
 }
 
 gboolean expose(GtkWidget *widget, GdkEventExpose *event, gpointer userdata) {
-	draw_ruler(widget);
+	drawRuler(widget);
 	
 	return TRUE;
 }
 
 /* loads an image file as a pixbuf (used for icon) */
-GdkPixbuf *create_pixbuf(const gchar * filename) {
+GdkPixbuf *createPixbuf(const gchar * filename) {
    GdkPixbuf *pixbuf;
    GError *error = NULL;
    pixbuf = gdk_pixbuf_new_from_file(filename, &error);
@@ -46,21 +46,21 @@ GdkPixbuf *create_pixbuf(const gchar * filename) {
 }
 
 /* rotates the ruler */
-void rotate_ruler(GtkWidget *widget) {	
+void rotateRuler(GtkWidget *widget) {	
 	int width, height;
 	gtk_window_get_size(GTK_WINDOW(widget), &width, &height);
 	gtk_window_resize(GTK_WINDOW(widget), height, width);
 	
-	if (ruler_orientation == HORIZONTAL) {
-		ruler_orientation = VERTICAL;
+	if (rulerOrientation == HORIZONTAL) {
+		rulerOrientation = VERTICAL;
 		gtk_widget_set_size_request(widget, 50, 100);
 	}
 	else {
-		ruler_orientation = HORIZONTAL;
+		rulerOrientation = HORIZONTAL;
 		gtk_widget_set_size_request(widget, 100, 50);
 	}
 		
-	draw_ruler(widget);
+	drawRuler(widget);
 }
 
 gboolean getXCursor() {
@@ -78,14 +78,14 @@ gboolean getXCursor() {
 	
 	cursor.x = event.xbutton.x;
 	cursor.y = event.xbutton.y;
-	draw_ruler(window);
+	drawRuler(window);
 
 	XCloseDisplay( dsp );
 	
 	return TRUE;
 }
 
-gboolean view_popup_menu (GtkWidget *widget, GdkEventButton *event, gpointer userdata) {
+gboolean viewPopupMenu (GtkWidget *widget, GdkEventButton *event, gpointer userdata) {
 	GtkWidget *menu, *menuitem_quit, *menuitem_stay_on_top;
 
 	menu = gtk_menu_new();
@@ -96,7 +96,7 @@ gboolean view_popup_menu (GtkWidget *widget, GdkEventButton *event, gpointer use
 	
 
 	g_signal_connect(menuitem_stay_on_top, "activate",
-					G_CALLBACK(stay_on_top), widget);
+					G_CALLBACK(stayOnTop), widget);
 	g_signal_connect(menuitem_quit, "activate",
 		             gtk_main_quit, widget);
 	
@@ -112,7 +112,7 @@ gboolean view_popup_menu (GtkWidget *widget, GdkEventButton *event, gpointer use
 	return TRUE;
 }
 
-gboolean stay_on_top(GtkWidget *widget, GdkEvent *event, gpointer userdata) {
+gboolean stayOnTop(GtkWidget *widget, GdkEvent *event, gpointer userdata) {
 	onTop = !onTop;
 	gtk_window_set_keep_above(GTK_WINDOW(window), onTop);
 	

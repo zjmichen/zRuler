@@ -9,7 +9,7 @@ enum Orientation {
 };
 
 extern Point cursor;
-extern Point cursor_last_pressed;
-extern enum Orientation ruler_orientation;
+extern Point cursorLastPressed;
+extern enum Orientation rulerOrientation;
 extern GtkWidget *window;
 extern gboolean onTop;

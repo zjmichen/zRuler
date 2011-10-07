@@ -13,30 +13,30 @@
 int i, j;
 int r_width, r_length;
 
-void draw_ruler(GtkWidget *widget) {
+void drawRuler(GtkWidget *widget) {
 	/* get window dimensions */
 	int w_width, w_height, w_x, w_y;
     gtk_window_get_size(GTK_WINDOW(widget), &w_width, &w_height);
     gtk_window_get_position(GTK_WINDOW(widget), &w_x, &w_y);
     
-    int cursor_mark_pos;
+    int cursorMarkPosition;
     
     /* make for rotation-independence */
-    if (ruler_orientation == HORIZONTAL) {
+    if (rulerOrientation == HORIZONTAL) {
 		r_width = w_height;
 		r_length = w_width;
-		cursor_mark_pos = cursor.x - w_x;
+		cursorMarkPosition = cursor.x - w_x;
     }
     else {
     	r_width = w_width;
     	r_length = w_height;
-    	cursor_mark_pos = cursor.y - w_y;
+    	cursorMarkPosition = cursor.y - w_y;
     }
     
     cairo_t *cr = gdk_cairo_create(gtk_widget_get_window(widget));
     cairo_t *cr_overlay = gdk_cairo_create(gtk_widget_get_window(widget));
     /* rotate the ruler, if necessary */
-    if (ruler_orientation == VERTICAL) {
+    if (rulerOrientation == VERTICAL) {
     	cairo_translate(cr, r_width, 0);
     	cairo_rotate(cr, M_PI/2);
     	cairo_translate(cr_overlay, r_width, 0);
@@ -46,21 +46,22 @@ void draw_ruler(GtkWidget *widget) {
     cairo_set_line_width(cr, 1);
     
     /* draw the components of the ruler */
-    draw_background(cr);
-    draw_lines(cr);
-    draw_numbers(cr_overlay);
-    draw_cursor_mark(cr, cursor_mark_pos);
-    draw_position_notifier(cr, cr_overlay, cursor_mark_pos);
-    draw_cap(cr);
-    draw_rotate_button(cr);
-    draw_translucent_overlay(cr_overlay);
-    draw_outline(cr);
+    drawBackground(cr);
+    drawLines(cr);
+    drawNumbers(cr_overlay);
+    drawCursorMark(cr, cursorMarkPosition);
+    drawPositionNotifier(cr, cr_overlay, cursorMarkPosition);
+    drawCap(cr);
+    drawRotateButton(cr);
+    drawMenuButton(cr);
+    drawTranslucentOverlay(cr_overlay);
+    drawOutline(cr);
     
     cairo_destroy(cr);
 	cairo_destroy(cr_overlay);
 }
 
-void draw_background(cairo_t *cr) {
+void drawBackground(cairo_t *cr) {
 	/* make transparent */
 	cairo_set_source_rgba (cr, 1.0, 0.5, 1.0, 0.0);
 	cairo_set_operator (cr, CAIRO_OPERATOR_SOURCE);
@@ -74,7 +75,7 @@ void draw_background(cairo_t *cr) {
 }
 
 /* pixel markers, the things that make it a ruler */
-void draw_lines(cairo_t *cr) {
+void drawLines(cairo_t *cr) {
 	for (i = 0; i < r_length; i++) {
 		int seglen = 3;
 		if (i % 10 == 0)
@@ -95,7 +96,7 @@ void draw_lines(cairo_t *cr) {
 }
 
 /* so you don't have to count */
-void draw_numbers(cairo_t *cr) {
+void drawNumbers(cairo_t *cr) {
 	cairo_set_source_rgb(cr, 1,1,1);
 	
     for (i = 0; i < r_length; i++) {
@@ -109,7 +110,7 @@ void draw_numbers(cairo_t *cr) {
 }
 
 /* tracks the mouse cursor position */
-void draw_cursor_mark(cairo_t *cr, int pos) {
+void drawCursorMark(cairo_t *cr, int pos) {
 	if (pos > 0 && pos < r_length) {
 		cairo_move_to(cr, pos+0.5, 0);
 		cairo_line_to(cr, pos+0.5, r_width);
@@ -120,16 +121,15 @@ void draw_cursor_mark(cairo_t *cr, int pos) {
 }
 
 /* text displaying cursor position */
-void draw_position_notifier(cairo_t *cr_bg, cairo_t *cr_num, int pos) {
-	if (ruler_orientation==VERTICAL) {
+void drawPositionNotifier(cairo_t *cr_bg, cairo_t *cr_num, int pos) {
+	if (rulerOrientation==VERTICAL) {
 		cairo_rotate(cr_num, -M_PI/2);
 		cairo_translate(cr_num, -r_width, 0);
 		cairo_rotate(cr_bg, -M_PI/2);
 		cairo_translate(cr_bg, -r_width, 0);
 	}
 
-	cairo_set_source_rgba(cr_bg, 1,1,1, 0.8);
-	if (ruler_orientation==HORIZONTAL) {
+	if (rulerOrientation==HORIZONTAL) {
 		cairo_move_to(cr_bg, 13.5, r_width/2);
 		cairo_curve_to(cr_bg, 13.5, r_width/2 - 12, 44.5, r_width/2 - 12, 44.5, r_width/2);
 		cairo_move_to(cr_bg, 13.5, r_width/2);
@@ -141,6 +141,7 @@ void draw_position_notifier(cairo_t *cr_bg, cairo_t *cr_num, int pos) {
 		cairo_move_to(cr_bg, r_width/2 + 3, 24.5);
 		cairo_curve_to(cr_bg, r_width/2 + 23, 24.5, r_width/2 + 23, 39.5, r_width/2 + 3, 39.5);
 	}
+	cairo_set_source_rgba(cr_bg, 1,1,1, 0.8);
 	cairo_fill(cr_bg);
 		
 	cairo_set_source_rgb(cr_num, 0,0,0);
@@ -153,7 +154,7 @@ void draw_position_notifier(cairo_t *cr_bg, cairo_t *cr_num, int pos) {
 /*	rendertext(cr_num, buf, 26 + numLen, r_width/2 - 6);*/
 
 	
-	if (ruler_orientation==VERTICAL) {
+	if (rulerOrientation==VERTICAL) {
 		rendertext(cr_num, buf, r_width/2 + numLen, numOffset);
 		cairo_translate(cr_num, r_width, 0);
 		cairo_rotate(cr_num, M_PI/2);
@@ -166,7 +167,7 @@ void draw_position_notifier(cairo_t *cr_bg, cairo_t *cr_num, int pos) {
 }
 
 /* thing on the end you resize it with */
-void draw_cap(cairo_t *cr) {
+void drawCap(cairo_t *cr) {
 	cairo_rectangle(cr, r_length - 10, 0, 10, r_width);
     cairo_set_source_rgb(cr, 0,0,0);
     cairo_fill(cr);
@@ -179,7 +180,7 @@ void draw_cap(cairo_t *cr) {
 }
 
 /* small button to rotate it 90 degrees */
-void draw_rotate_button(cairo_t *cr) {
+void drawRotateButton(cairo_t *cr) {
 	cairo_arc(cr, r_length - 20.5, r_width/2 + 0.5, 5, 0.5, 2*M_PI);
 	cairo_move_to(cr, r_length - 15.5, r_width/2 + 0.5);
 	cairo_line_to(cr, r_length - 19.5, r_width/2 - 0.5);
@@ -191,8 +192,23 @@ void draw_rotate_button(cairo_t *cr) {
 
 }
 
+/* small button to open the context menu */
+void drawMenuButton(cairo_t *cr) {
+/*	cairo_arc(cr, r_length - 20.5, r_width/2 + 0.5, 5, 0.5, 2*M_PI);*/
+/*	cairo_move_to(cr, r_length - 15.5, r_width/2 + 0.5);*/
+/*	cairo_line_to(cr, r_length - 19.5, r_width/2 - 0.5);*/
+/*	cairo_move_to(cr, r_length - 15.5, r_width/2 + 0.5);*/
+/*	cairo_line_to(cr, r_length - 14.5, r_width/2 - 3.5);*/
+
+	cairo_rectangle(cr, r_length - 45.5, r_width/2 - 5.5, 11, 11);
+	
+    cairo_set_source_rgba(cr, 1,1,1, 1);
+    cairo_stroke(cr);
+
+}
+
 /* makes it shiny and 3Dish */
-void draw_translucent_overlay(cairo_t *cr) {
+void drawTranslucentOverlay(cairo_t *cr) {
     cairo_pattern_t *hor_pat = cairo_pattern_create_linear(0, 0, 0, r_width);
     cairo_pattern_add_color_stop_rgba(hor_pat, 0, 1,1,1, .7);
     cairo_pattern_add_color_stop_rgba(hor_pat, .2, 0,0,0, 0);
@@ -202,7 +218,7 @@ void draw_translucent_overlay(cairo_t *cr) {
 }
 
 /* 1px border */
-void draw_outline(cairo_t *cr) {
+void drawOutline(cairo_t *cr) {
 	cairo_set_source_rgb(cr, 0,0,0);
 	cairo_rectangle(cr, 0.5, 0.5, r_length - 1, r_width - 1);
 	cairo_stroke(cr);
@@ -232,7 +248,7 @@ void rendertext(cairo_t *cr, char *s, int x, int y) {
 /* checks if x,y is in the rotate button
  * note: this is relative to the rotation!
  */
-gboolean is_in_button(int x, int y) {
+gboolean isInRotateButton(int x, int y) {
 	if (x > r_length - 25 && x < r_length - 15 && y > r_width/2 - 4.5 && y < r_width/2 + 4.5)
 		return TRUE;
 		
