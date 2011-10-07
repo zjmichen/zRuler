@@ -18,6 +18,7 @@
 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. *
 \****************************************************************************/
 
+#include <unistd.h>
 #include <X11/Xlib.h>
 #include <gtk/gtk.h>
 #include "window.h"
@@ -110,12 +111,14 @@ gboolean viewPopupMenu (GtkWidget *widget, GdkEventButton *event, gpointer userd
 			  *menuitem_quit, 
 			  *menuitem_stay_on_top, 
 			  *menuitem_about,
-			  *menuitem_rotate;
+			  *menuitem_rotate,
+			  *menuitem_new_ruler;
 
 	/* the actual menu */
 	menu = gtk_menu_new();
 
 	/* the items in the menu */
+	menuitem_new_ruler = gtk_menu_item_new_with_label("New ruler");
 	menuitem_stay_on_top = gtk_check_menu_item_new_with_label("Always on top");
 	gtk_check_menu_item_set_active ((GtkCheckMenuItem*)menuitem_stay_on_top, onTop);
 	menuitem_rotate = gtk_menu_item_new_with_label("Rotate");
@@ -123,6 +126,8 @@ gboolean viewPopupMenu (GtkWidget *widget, GdkEventButton *event, gpointer userd
 	menuitem_quit = gtk_menu_item_new_with_label("Quit");
 	
 	/* make the menu items do things */
+	g_signal_connect(menuitem_new_ruler, "activate",
+					G_CALLBACK(create_new_ruler), NULL);
 	g_signal_connect(menuitem_stay_on_top, "activate",
 					G_CALLBACK(stayOnTop), widget);
 	g_signal_connect(menuitem_rotate, "activate",
@@ -133,6 +138,7 @@ gboolean viewPopupMenu (GtkWidget *widget, GdkEventButton *event, gpointer userd
 		             gtk_main_quit, widget);
 	
 	/* put it all together */
+	gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem_new_ruler);
 	gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem_stay_on_top);
 	gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem_rotate);
 	gtk_menu_shell_append(GTK_MENU_SHELL(menu), gtk_separator_menu_item_new());
@@ -169,6 +175,14 @@ void viewAboutDialog(GtkWidget *widget, gpointer data) {
 gboolean stayOnTop(GtkWidget *widget, GdkEvent *event, gpointer userdata) {
 	onTop = !onTop;
 	gtk_window_set_keep_above(GTK_WINDOW(window), onTop);
+	
+	return TRUE;
+}
+
+gboolean create_new_ruler(GtkWidget *widget, GdkEvent *event, gpointer userdata) {
+	gchar *exec = "./zruler";
+	g_spawn_async(NULL, &exec, NULL, G_SPAWN_LEAVE_DESCRIPTORS_OPEN, NULL, NULL,
+					NULL, NULL);
 	
 	return TRUE;
 }

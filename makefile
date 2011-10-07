@@ -3,6 +3,10 @@ GTKFLAGS=`pkg-config --cflags --libs gtk+-3.0`
 CFLAGS= -c -Wall $(GTKFLAGS)
 OBJS=main.o window.o graphics.o mouse.o
 CC=gcc
+INSTALL_PATH=/usr/local/bin/
+DESKTOP_PATH=/usr/share/applications/
+ICON_PATH=/usr/share/pixmaps/
+INSTALL_FILES="  $(INSTALL_PATH)$(NAME)\n  $(DESKTOP_PATH)$(NAME)\n  $(ICON_PATH)$(NAME)"
 
 all: ruler
 
@@ -29,8 +33,13 @@ run: ruler
 	./$(NAME)
 	
 install: ruler
-	mkdir -p /usr/local/bin
-	cp $(NAME) /usr/local/bin
-	cp $(NAME).desktop /usr/share/applications
-	chmod 0755 /usr/share/applications/$(NAME).desktop
-	cp $(NAME).png /usr/share/pixmaps
+	mkdir -p $(INSTALL_PATH)
+	cp $(NAME) $(INSTALL_PATH)
+	cp $(NAME).desktop $(DESKTOP_PATH)
+	chmod 0755 $(DESKTOP_PATH)$(NAME).desktop
+	cp $(NAME).png $(ICON_PATH)
+	@echo
+	@echo Installed the following files:
+	@echo $(INSTALL_FILES)
+	@echo
+	

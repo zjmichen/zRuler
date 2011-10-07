@@ -3,3 +3,4 @@
 	`menu_proxy_module_load': ./zruler: undefined symbol: menu_proxy_module_load
 	(zruler:2634): Gtk-WARNING **: Failed to load type module: (null)
 (1.0) the menu and about dialog are not in the window manager's theme
+(1.0) ruler flickers (due to constant updating of cursor position and redrawing)

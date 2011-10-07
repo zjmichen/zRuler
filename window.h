@@ -6,3 +6,4 @@ gboolean getXCursor();
 gboolean viewPopupMenu (GtkWidget*, GdkEventButton*, gpointer);
 void viewAboutDialog(GtkWidget*, gpointer);
 gboolean stayOnTop(GtkWidget*, GdkEvent*, gpointer);
+gboolean create_new_ruler(GtkWidget*, GdkEvent*, gpointer);
