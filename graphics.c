@@ -1,7 +1,6 @@
 /* graphics.c
- * does all the drawing, also things
- * which require access to graphic
- * data (e.g. is_in_button)
+ * This file draws all graphic elements of the ruler, and has some special
+ * functions that deal with those elements
  */
 
 #include <math.h>
@@ -10,15 +9,19 @@
 #include "common.h"
 #include "graphics.h"
 
-int i, j;
-int r_width, r_length;
+int i, j;				// iterators
+int r_width, r_length;	// ruler width and length, which are independent of window dimensions
 
+/* main function to redraw the ruler and all its components */
 void drawRuler(GtkWidget *widget) {
 	/* get window dimensions */
 	int w_width, w_height, w_x, w_y;
     gtk_window_get_size(GTK_WINDOW(widget), &w_width, &w_height);
     gtk_window_get_position(GTK_WINDOW(widget), &w_x, &w_y);
     
+    /* position at which the line denoting the cursor position should be,
+     * which is relative to the ruler's rotation
+     */
     int cursorMarkPosition;
     
     /* make for rotation-independence */
@@ -35,7 +38,8 @@ void drawRuler(GtkWidget *widget) {
     
     cairo_t *cr = gdk_cairo_create(gtk_widget_get_window(widget));
     cairo_t *cr_overlay = gdk_cairo_create(gtk_widget_get_window(widget));
-    /* rotate the ruler, if necessary */
+    
+    /* rotate the ruler logically, if necessary */
     if (rulerOrientation == VERTICAL) {
     	cairo_translate(cr, r_width, 0);
     	cairo_rotate(cr, M_PI/2);
@@ -61,6 +65,7 @@ void drawRuler(GtkWidget *widget) {
 	cairo_destroy(cr_overlay);
 }
 
+/* draws the transparency and the alpha background */
 void drawBackground(cairo_t *cr) {
 	/* make transparent */
 	cairo_set_source_rgba (cr, 1.0, 0.5, 1.0, 0.0);
@@ -77,11 +82,11 @@ void drawBackground(cairo_t *cr) {
 /* pixel markers, the things that make it a ruler */
 void drawLines(cairo_t *cr) {
 	for (i = 0; i < r_length; i++) {
-		int seglen = 3;
+		int seglen = 3;		// default line length of 3
 		if (i % 10 == 0)
-			seglen = 6;
+			seglen = 6;		// length of 6 at each 10px
 		if (i % 50 == 0)
-			seglen = 9;
+			seglen = 9;		// length of 9 at each 50px
 		if (i % 2 == 0)
 			cairo_set_source_rgb(cr, 0,0,0);	// default line color
 		else
@@ -95,7 +100,7 @@ void drawLines(cairo_t *cr) {
 	}
 }
 
-/* so you don't have to count */
+/* numeric labels */
 void drawNumbers(cairo_t *cr) {
 	cairo_set_source_rgb(cr, 1,1,1);
 	
@@ -122,6 +127,7 @@ void drawCursorMark(cairo_t *cr, int pos) {
 
 /* text displaying cursor position */
 void drawPositionNotifier(cairo_t *cr_bg, cairo_t *cr_num, int pos) {
+	/* vertical orientation requires some readjustment of things... */
 	if (rulerOrientation==VERTICAL) {
 		cairo_rotate(cr_num, -M_PI/2);
 		cairo_translate(cr_num, -r_width, 0);
@@ -136,26 +142,26 @@ void drawPositionNotifier(cairo_t *cr_bg, cairo_t *cr_num, int pos) {
 		cairo_curve_to(cr_bg, 13.5, r_width/2 + 12, 44.5, r_width/2 + 12, 44.5, r_width/2);
 	}
 	else {
-		cairo_move_to(cr_bg, r_width/2 + 3, 24.5);
-		cairo_curve_to(cr_bg, r_width/2 - 17, 24.5, r_width/2 - 17, 39.5, r_width/2 + 3, 39.5);
-		cairo_move_to(cr_bg, r_width/2 + 3, 24.5);
-		cairo_curve_to(cr_bg, r_width/2 + 23, 24.5, r_width/2 + 23, 39.5, r_width/2 + 3, 39.5);
+		cairo_move_to(cr_bg, r_width/2, 24.5);
+		cairo_curve_to(cr_bg, r_width/2 - 20, 24.5, r_width/2 - 20, 39.5, r_width/2, 39.5);
+		cairo_move_to(cr_bg, r_width/2, 24.5);
+		cairo_curve_to(cr_bg, r_width/2 + 20, 24.5, r_width/2 + 20, 39.5, r_width/2, 39.5);
 	}
-	cairo_set_source_rgba(cr_bg, 1,1,1, 0.8);
+	cairo_set_source_rgba(cr_bg, 1,1,1, 0.9);
 	cairo_fill(cr_bg);
 		
 	cairo_set_source_rgb(cr_num, 0,0,0);
-	int numLen = -4*(int)log10(pos)+1;
+	
+	/* this is to center and render the number */
+	int numLen = -4*(int)log10(pos)+1;		// number of digits
 	if (pos < 0)
 		numLen -= 8;
 	int numOffset = 26;
 	char buf[5];
 	sprintf(buf, "%d", pos);
-/*	rendertext(cr_num, buf, 26 + numLen, r_width/2 - 6);*/
-
 	
 	if (rulerOrientation==VERTICAL) {
-		rendertext(cr_num, buf, r_width/2 + numLen, numOffset);
+		rendertext(cr_num, buf, r_width/2 + numLen - 2, numOffset);
 		cairo_translate(cr_num, r_width, 0);
 		cairo_rotate(cr_num, M_PI/2);
 		cairo_translate(cr_bg, r_width, 0);
@@ -229,6 +235,7 @@ void drawOutline(cairo_t *cr) {
 	cairo_stroke(cr);
 }
 
+/* displays a string at a location x,y */
 void rendertext(cairo_t *cr, char *s, int x, int y) {
     PangoLayout *layout;
     PangoFontDescription *desc;    
@@ -260,8 +267,8 @@ gboolean isInRotateButton(int x, int y) {
 	return FALSE;
 }
 
+/* similarly, checks if x,y is in the menu button */
 gboolean isInMenuButton(int x, int y) {
-/*cairo_rectangle(cr, r_length - 45.5, r_width/2 - 5.5, 11, 11);*/
 	if (x >= r_length - 46 && x <= r_length - 35 && y >= r_width/2 - 6 && y <= r_width/2 + 5)
 		return TRUE;
 

@@ -1,6 +1,6 @@
 /* window.c
- * does window-related things,
- * resizing, transparency, etc..
+ * This file handles general window operations such as exposure, icon loading,
+ * getting cursor position, child windows, etc.
  */
 
 #include <X11/Xlib.h>
@@ -13,14 +13,14 @@
 /* sets shit up to be transparent */
 void screenChanged (GtkWindow *window, GdkScreen *old_screen, GtkWidget *label) {
 	GdkScreen *screen = gtk_widget_get_screen (GTK_WIDGET (window));
-	GdkVisual *visual = gdk_screen_get_rgba_visual (screen);
+	GdkVisual *visual = gdk_screen_get_rgba_visual (screen);	// ask for transparent visual
 
 	if (visual == NULL) {
 		fprintf(stderr, "Alpha not supported, using fallback.\n");
 		visual = gdk_screen_get_system_visual (screen);
 	}
 
-	gtk_widget_set_visual (GTK_WIDGET(window), visual);
+	gtk_widget_set_visual (GTK_WIDGET(window), visual);			// apply transparent visual
 	
 	if (!gtk_widget_is_composited(GTK_WIDGET(window)))
 		fprintf(stderr, "Window not composited, transparency disabled.\n");
@@ -45,15 +45,18 @@ GdkPixbuf *createPixbuf(const gchar * filename) {
    return pixbuf;
 }
 
-/* rotates the ruler */
+/* rotates the ruler, logically and actually */
 void rotateRuler(GtkWidget *widget) {	
 	int width, height;
+	
+	widget = window;
+	
 	gtk_window_get_size(GTK_WINDOW(widget), &width, &height);
 	gtk_window_resize(GTK_WINDOW(widget), height, width);
 	
 	if (rulerOrientation == HORIZONTAL) {
 		rulerOrientation = VERTICAL;
-		gtk_widget_set_size_request(widget, 50, 100);
+		gtk_widget_set_size_request(widget, 50, 100);	// minimum sizes
 	}
 	else {
 		rulerOrientation = HORIZONTAL;
@@ -63,6 +66,7 @@ void rotateRuler(GtkWidget *widget) {
 	drawRuler(widget);
 }
 
+/* finds the root position of the cursor, stores it in cursor */
 gboolean getXCursor() {
 	Display *dsp = XOpenDisplay( NULL );
 	if( !dsp ){ return FALSE; }
@@ -85,26 +89,44 @@ gboolean getXCursor() {
 	return TRUE;
 }
 
+/* creates and displays the context menu */
 gboolean viewPopupMenu (GtkWidget *widget, GdkEventButton *event, gpointer userdata) {
-	GtkWidget *menu, *menuitem_quit, *menuitem_stay_on_top;
+	GtkWidget *menu, 
+			  *menuitem_quit, 
+			  *menuitem_stay_on_top, 
+			  *menuitem_about,
+			  *menuitem_rotate;
 
+	/* the actual menu */
 	menu = gtk_menu_new();
 
+	/* the items in the menu */
 	menuitem_stay_on_top = gtk_check_menu_item_new_with_label("Always on top");
 	gtk_check_menu_item_set_active ((GtkCheckMenuItem*)menuitem_stay_on_top, onTop);
+	menuitem_rotate = gtk_menu_item_new_with_label("Rotate");
+	menuitem_about = gtk_menu_item_new_with_label("About");
 	menuitem_quit = gtk_menu_item_new_with_label("Quit");
 	
-
+	/* make the menu items do things */
 	g_signal_connect(menuitem_stay_on_top, "activate",
 					G_CALLBACK(stayOnTop), widget);
+	g_signal_connect(menuitem_rotate, "activate",
+					G_CALLBACK(rotateRuler), widget);
+	g_signal_connect(menuitem_about, "activate",
+					G_CALLBACK(viewAboutDialog), widget);
 	g_signal_connect(menuitem_quit, "activate",
 		             gtk_main_quit, widget);
 	
+	/* put it all together */
 	gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem_stay_on_top);
+	gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem_rotate);
+	gtk_menu_shell_append(GTK_MENU_SHELL(menu), gtk_separator_menu_item_new());
+	gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem_about);
 	gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem_quit);
 
 	gtk_widget_show_all(menu);
 
+	/* boom, menu. */
 	gtk_menu_popup(GTK_MENU(menu), NULL, NULL, NULL, userdata,
 					(event != NULL) ? event->button : 0,
 					gdk_event_get_time((GdkEvent*)event));
@@ -112,6 +134,23 @@ gboolean viewPopupMenu (GtkWidget *widget, GdkEventButton *event, gpointer userd
 	return TRUE;
 }
 
+/* creates and displays the about window */
+void viewAboutDialog(GtkWidget *widget, gpointer data) {
+	GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file("zruler.png", NULL);
+	
+	GtkWidget *dialog  = gtk_about_dialog_new();
+	gtk_about_dialog_set_program_name(GTK_ABOUT_DIALOG(dialog), "zRuler");
+	gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(dialog), VERSION);
+	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(dialog), "© Zack Michener 2011");
+	gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(dialog), "A simple, yet stylish screen ruler.");
+	gtk_about_dialog_set_website(GTK_ABOUT_DIALOG(dialog), "https://github.com/zjmichen/ruler");
+	gtk_about_dialog_set_logo(GTK_ABOUT_DIALOG(dialog), pixbuf);
+	g_object_unref(pixbuf), pixbuf = NULL;
+	gtk_dialog_run(GTK_DIALOG(dialog));
+	gtk_widget_destroy(dialog);
+}
+
+/* toggles the always-on-top mode */
 gboolean stayOnTop(GtkWidget *widget, GdkEvent *event, gpointer userdata) {
 	onTop = !onTop;
 	gtk_window_set_keep_above(GTK_WINDOW(window), onTop);

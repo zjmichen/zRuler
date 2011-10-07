@@ -12,11 +12,12 @@
 #include "graphics.h"
 #include "mouse.h"
 
-Point cursor;
-Point cursorLastPressed;
+const char *VERSION = "0.3";
+Point cursor;						// current position of cursor, always up to date
+Point cursorLastPressed;			// position of last mouse pressed event
 enum Orientation rulerOrientation = HORIZONTAL;
 GtkWidget *window;
-gboolean onTop = FALSE;
+gboolean onTop = FALSE;				// always on top flag
 
 int main(int argc, char** argv) {
 	gtk_init(&argc, &argv);
@@ -31,6 +32,7 @@ int main(int argc, char** argv) {
 	gtk_window_set_has_resize_grip(GTK_WINDOW(window), FALSE);
 	gtk_window_set_default_icon(createPixbuf("zruler.png"));
 	
+	/* hey, gtk, you have events to listen for! */
 	gtk_widget_add_events(window, GDK_BUTTON_PRESS_MASK | 
 									GDK_BUTTON_MOTION_MASK);
 	
@@ -46,7 +48,7 @@ int main(int argc, char** argv) {
 	g_signal_connect(G_OBJECT(window), "motion-notify-event", 
 							G_CALLBACK(mouseMotionFilter), NULL);
 	
-	/* gets the _global_ cursor position constantly */
+	/* gets the _global_ cursor position every 100ms */
 	g_timeout_add(100, getXCursor, NULL);
 	
 	/* get things going */

@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Screen Ruler
+GenericName=Screen Ruler
+Comment=Measure pixels on the screen
+Exec=/usr/local/bin/zruler
+Icon=/usr/share/pixmaps/zruler.png
+Terminal=false
+Categories=Graphics;
+StartupNotify=true

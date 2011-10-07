@@ -8,6 +8,7 @@ enum Orientation {
 	VERTICAL
 };
 
+extern const char *VERSION;
 extern Point cursor;
 extern Point cursorLastPressed;
 extern enum Orientation rulerOrientation;

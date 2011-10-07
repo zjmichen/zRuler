@@ -1,5 +1,5 @@
 /* mouse.c
- * handles mouse events
+ * This file handles mouse events.
  */
 
 #include <gtk/gtk.h>

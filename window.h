@@ -4,4 +4,5 @@ GdkPixbuf *createPixbuf(const gchar*);
 void rotateRuler(GtkWidget*);
 gboolean getXCursor();
 gboolean viewPopupMenu (GtkWidget*, GdkEventButton*, gpointer);
+void viewAboutDialog(GtkWidget*, gpointer);
 gboolean stayOnTop(GtkWidget*, GdkEvent*, gpointer);
