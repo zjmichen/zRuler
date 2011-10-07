@@ -42,4 +42,4 @@ install: ruler
 	@echo Installed the following files:
 	@echo $(INSTALL_FILES)
 	@echo
-	
+	@echo Installation successful.

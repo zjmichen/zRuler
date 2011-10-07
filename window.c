@@ -180,7 +180,7 @@ gboolean stayOnTop(GtkWidget *widget, GdkEvent *event, gpointer userdata) {
 }
 
 gboolean create_new_ruler(GtkWidget *widget, GdkEvent *event, gpointer userdata) {
-	gchar *exec = "./zruler";
+	gchar *exec = "/usr/local/bin/zruler";
 	g_spawn_async(NULL, &exec, NULL, G_SPAWN_LEAVE_DESCRIPTORS_OPEN, NULL, NULL,
 					NULL, NULL);
 	

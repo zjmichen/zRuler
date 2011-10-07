@@ -19,6 +19,7 @@
 \****************************************************************************/
 
 #include <stdlib.h>
+#include <string.h>
 #include <gtk/gtk.h>
 #include <X11/Xlib.h>
 #include "common.h"
