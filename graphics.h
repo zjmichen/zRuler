@@ -11,3 +11,4 @@ void drawTranslucentOverlay(cairo_t*);
 void drawOutline(cairo_t*);
 void rendertext(cairo_t*, char*, int, int);
 gboolean isInRotateButton(int, int);
+gboolean isInMenuButton(int, int);

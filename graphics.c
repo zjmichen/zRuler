@@ -194,16 +194,21 @@ void drawRotateButton(cairo_t *cr) {
 
 /* small button to open the context menu */
 void drawMenuButton(cairo_t *cr) {
-/*	cairo_arc(cr, r_length - 20.5, r_width/2 + 0.5, 5, 0.5, 2*M_PI);*/
-/*	cairo_move_to(cr, r_length - 15.5, r_width/2 + 0.5);*/
-/*	cairo_line_to(cr, r_length - 19.5, r_width/2 - 0.5);*/
-/*	cairo_move_to(cr, r_length - 15.5, r_width/2 + 0.5);*/
-/*	cairo_line_to(cr, r_length - 14.5, r_width/2 - 3.5);*/
 
-	cairo_rectangle(cr, r_length - 45.5, r_width/2 - 5.5, 11, 11);
-	
-    cairo_set_source_rgba(cr, 1,1,1, 1);
+	cairo_set_source_rgba(cr, 1,1,1, 1);
+	cairo_rectangle(cr, r_length - 45.5, r_width/2 - 4.5, 11, 11);
+	cairo_move_to(cr, r_length - 43, r_width/2 + 0.5);
+	cairo_line_to(cr, r_length - 37, r_width/2 + 0.5);
+	cairo_move_to(cr, r_length - 43, r_width/2 + 3.5);
+	cairo_line_to(cr, r_length - 37, r_width/2 + 3.5);
     cairo_stroke(cr);
+	cairo_rectangle(cr, r_length - 45.5, r_width/2 - 5.5, 11, 3.5);
+	cairo_fill(cr);
+
+	cairo_set_source_rgba(cr, 0,0,0, 0);
+	cairo_move_to(cr, r_length - 43, r_width/2 - 3.5);
+	cairo_line_to(cr, r_length - 37, r_width/2 - 3.5);
+	cairo_stroke(cr);
 
 }
 
@@ -249,8 +254,16 @@ void rendertext(cairo_t *cr, char *s, int x, int y) {
  * note: this is relative to the rotation!
  */
 gboolean isInRotateButton(int x, int y) {
-	if (x > r_length - 25 && x < r_length - 15 && y > r_width/2 - 4.5 && y < r_width/2 + 4.5)
+	if (x >= r_length - 25 && x <= r_length - 15 && y >= r_width/2 - 4.5 && y <= r_width/2 + 4.5)
 		return TRUE;
 		
+	return FALSE;
+}
+
+gboolean isInMenuButton(int x, int y) {
+/*cairo_rectangle(cr, r_length - 45.5, r_width/2 - 5.5, 11, 11);*/
+	if (x >= r_length - 46 && x <= r_length - 35 && y >= r_width/2 - 6 && y <= r_width/2 + 5)
+		return TRUE;
+
 	return FALSE;
 }

@@ -12,6 +12,7 @@ gboolean mouseButtonFilter(GtkWidget *widget, GdkEvent *event, gpointer userdata
 	cursorLastPressed.x = event->button.x;
 	cursorLastPressed.y = event->button.y;
 	
+	/* set up x,y relative to rotation so I can use them in funcs easier */
 	int x, y;
 	if (rulerOrientation == HORIZONTAL) {
 		x = cursorLastPressed.x;
@@ -22,12 +23,18 @@ gboolean mouseButtonFilter(GtkWidget *widget, GdkEvent *event, gpointer userdata
 		y = cursorLastPressed.x;	
 	}
 	
+	/* right click = context menu */
 	if (event->button.button == 3) {
 		viewPopupMenu(widget, (GdkEventButton*)event, userdata);
 		return TRUE;
 	}
+	
+	/* rotate button is clicked */
 	if (isInRotateButton(x, y))
 		rotateRuler(widget);
+		
+	if (isInMenuButton(x,y))
+		viewPopupMenu(widget, (GdkEventButton*)event, userdata);
 	
 	return TRUE;
 }
