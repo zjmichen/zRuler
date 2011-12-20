@@ -1,5 +1,5 @@
 /****************************************************************************\
-* Copyright 2011 Zack Michener <zjmichen@unca.edu>                           *
+* Copyright 2011 Zack Michener <zack@zackmichener.com>                       *
 *                                                                            *
 * This file is part of zRuler.                                               *
 *                                                                            *

@@ -11,7 +11,7 @@ INSTALL_FILES="  $(INSTALL_PATH)$(NAME)\n  $(DESKTOP_PATH)$(NAME)\n  $(ICON_PATH
 all: ruler
 
 ruler: $(OBJS)
-	$(CC) $(GTKFLAGS) $(OBJS) -o $(NAME)
+	$(CC) $(OBJS) $(GTKFLAGS) -o $(NAME)
 
 main.o: main.c
 	$(CC) $(CFLAGS) main.c
